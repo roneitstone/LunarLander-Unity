@@ -2,22 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
+//using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.IO;
-using System;
-using System.Globalization;
+//using System;
+using System.Runtime.InteropServices;
+//using System.Globalization;
+using System.Linq;
 
 public class Menu : MonoBehaviour
 {
 
     public Text sensor;
     PlayerControls controls;
-    public float acelerador = 0f;
+    private float acelerador;
     public Text testado;
+
+
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         if(PlayerPrefs.GetInt("Testado") != 1)
         {
@@ -31,12 +35,38 @@ public class Menu : MonoBehaviour
         controls = new PlayerControls();
         controls.Jogar.Acelerar.performed += ctx => acelerador = ctx.ReadValue<float>();
         controls.Jogar.Acelerar.canceled += ctx => acelerador = 0.37f;
-        if (!Directory.Exists(@".\Dados"))
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            Directory.CreateDirectory(@".\Dados");
-            Debug.Log("aa");
+            string homeRoot = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+            string newFolder = System.IO.Path.Combine(homeRoot, "Dados");
+            
+            if (!Directory.Exists(newFolder))
+            {
+                System.IO.Directory.CreateDirectory(newFolder);
+                Debug.Log("aa");
+            }
+            var directory = new DirectoryInfo(newFolder);
+            var myFile = directory.GetFiles()
+                         .OrderByDescending(f => f.LastWriteTime)
+                         .First();
+            Debug.Log(myFile.Name);
+            StreamWriter arquivo = new StreamWriter(newFolder + "/try.txt");
+
+            arquivo.Write(myFile.Name);
+            arquivo.Close();
         }
 
+        else 
+        {
+            if (!Directory.Exists(@".\Dados"))
+            {
+                Directory.CreateDirectory(@".\Dados");
+                Debug.Log("aa");
+            }
+                
+        }
+        
 
         // teste 
         /*string time;
@@ -58,7 +88,7 @@ public class Menu : MonoBehaviour
     {
         sensor.text = "limiar = " + acelerador.ToString("0.00"); 
     }
-
+        
     public void Type1()
     {
         PlayerPrefs.SetInt("nave", 0);

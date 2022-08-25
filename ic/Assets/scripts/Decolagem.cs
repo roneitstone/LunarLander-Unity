@@ -26,12 +26,13 @@ namespace aqer
         private float acelerador = 0f;
         public float average;
         public float delay = 0f;
-        private float simulation = 0.05f;
+        private float simulation = 0.003f;
         float max = 0f;
         private bool started = false;
-        bool entrou = false;
+        //bool entrou = false;
         PlayerControls controls;
         public GameObject resultados;
+        public GameObject nave;
         public Rigidbody2D rb;
         // Start is called before the first frame update
         private void Awake()
@@ -54,10 +55,10 @@ namespace aqer
         void Update()
         {
             
-            if (acelerador < 0.4f && entrou == true)
+            if (acelerador < 0.4f && valor.Count != 0)
             {
                 started = true;
-                entrou = false;
+                //entrou = false;
                 listador();
                 rb.AddForce(transform.up * 40f);
 
@@ -65,8 +66,7 @@ namespace aqer
             if (acelerador > 0.4f && started == false)
             {
                 delay += Time.deltaTime;
-                rb.AddForce(transform.up * 23f * acelerador);
-                
+                nave.transform.position = new Vector2(nave.transform.position.x, nave.transform.position.y + acelerador *5*Time.deltaTime);
                 limiar.text = acelerador.ToString();
                 tempo.text = delay.ToString();
 
@@ -78,9 +78,9 @@ namespace aqer
                         max = acelerador;
                     }
 
-                    entrou = true;
+                    
                     valor.Add(acelerador);
-                    simulation = 0.05f;
+                    simulation = 0.003f;
                 }
 
             }
@@ -160,7 +160,9 @@ namespace aqer
             string date;
             string data;
             date = DateTime.UtcNow.ToString("dd-MM-yyyy-");
-            data = @"./Dados/" + date + time + ".txt";
+            string homeRoot = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+            string newFolder = System.IO.Path.Combine(homeRoot, "Dados/");
+            data = newFolder + date + time + ".txt";
             //Passa a file que será armazenado
             StreamWriter arquivo = new StreamWriter(data);
                 foreach(float v in valor)

@@ -28,7 +28,7 @@ namespace aqer
         float acelerador, multiplicador, limiar;
         // Start is called before the
 
-        void Start()
+        private void Awake()
         {
             
             mantain = turn;
