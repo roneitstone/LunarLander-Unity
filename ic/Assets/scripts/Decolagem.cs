@@ -29,11 +29,11 @@ namespace aqer
         private float simulation = 0.003f;
         float max = 0f;
         private bool started = false;
-        //bool entrou = false;
         PlayerControls controls;
         public GameObject resultados;
         public GameObject nave;
         public Rigidbody2D rb;
+
         // Start is called before the first frame update
         private void Awake()
         {
@@ -43,12 +43,7 @@ namespace aqer
         }
         void Start()
         {
-            //slider.value = 0.0f;
             PlayerPrefs.SetInt("Testado", 1);
-           
-            
-            
-            
         }
 
         // Update is called once per frame
@@ -58,7 +53,6 @@ namespace aqer
             if (acelerador < 0.4f && valor.Count != 0)
             {
                 started = true;
-                //entrou = false;
                 listador();
                 rb.AddForce(transform.up * 40f);
 

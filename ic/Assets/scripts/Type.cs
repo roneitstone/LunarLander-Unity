@@ -7,7 +7,7 @@ public class Type : MonoBehaviour
     public GameObject navebase;
     public GameObject naveAngular;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (PlayerPrefs.GetInt("nave") == 0)
         {

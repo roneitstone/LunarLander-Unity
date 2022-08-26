@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class Controller2 : MonoBehaviour
 {
     public Rigidbody2D rb;
+    public LineRenderer ln;
     public bool restartado = false;
     public float speed = 2f;
     private float mantain, multiplicador, acelerador;
@@ -26,7 +27,8 @@ public class Controller2 : MonoBehaviour
     private double prespeed;
     Quaternion rotacao;
     PlayerControls controls;
-
+    public ParticleSystem ps;
+    
     // Start is called before the first frame update
     private void Awake()
     {
@@ -44,14 +46,18 @@ public class Controller2 : MonoBehaviour
    void Start()
     {
         limiar = acelerador + 0.1f;
+        var main = ps.main;
+        main.startSpeed = limiar * 15f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         if (morreu == false)
         {
-           
+            
+            //controla a rotacao
             lateral += virada * Time.deltaTime * -movimentohor;
 
             // movimentacao por vetorização de eixo
@@ -68,16 +74,23 @@ public class Controller2 : MonoBehaviour
             // aumentar o valor do vetor 
             if (acelerador >= limiar)
             {
-                    combustivel -= Time.deltaTime * 40f;
+                //varia a velocidade da emissao das particulas do propulsor
+
+                var main = ps.main;
+                main.startSpeed = limiar * 90f;
+                combustivel -= Time.deltaTime * 40f;
                     combustivel = Mathf.Round(combustivel * 100f) / 100f;
                     gasolina.text = "Fuel = " + combustivel;
-                    speed += Time.deltaTime * acelerador*120*multiplicador;
+
+                    speed += Time.deltaTime * acelerador*20*multiplicador;
                     rb.AddForce(transform.up * speed);
             }
                 
             // simulação da gravidade
             else
             {
+                var main = ps.main;
+                main.startSpeed = limiar*10f;
                 if (speed > mantain)
                 {
                     speed -= Time.deltaTime * 100;
@@ -105,9 +118,13 @@ public class Controller2 : MonoBehaviour
             morte -= Time.deltaTime;
             if (restartado == true)
             {
+                ln.positionCount = 0;
                 restartado = false;
-                FindObjectOfType<platafromapi>().reset();
+
+                Destroy( FindObjectOfType<TerrainGenerator>());
+                gameObject.AddComponent<TerrainGenerator>();
                 transform.position = new Vector2(0f, 150f);
+
                 combustivel = 500f;
                 morreu = false;
                 gasolina.text = "Fuel = " + 500f;

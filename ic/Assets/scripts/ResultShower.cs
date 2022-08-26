@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.IO;
 using System;
 using System.Linq;
-using System.IO;
+//using System.IO;
 using System.Runtime.InteropServices;
 
 
@@ -32,10 +32,10 @@ namespace aqer
         void Start()
         {
             max.text = "Max = " + PlayerPrefs.GetFloat("Max").ToString("0.00");
-            //tempo.text += PlayerPrefs.GetFloat("Tempo");
-            //categoria.text += PlayerPrefs.GetFloat("Categoria");
+            // verificamos o sistema operacional
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
+                //achamos o path
                 string homeRoot = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
                 string newFolder = System.IO.Path.Combine(homeRoot, "Dados");
 
@@ -44,20 +44,24 @@ namespace aqer
                              .OrderByDescending(f => f.LastWriteTime)
                              .First();
                 Debug.Log(myFile.Name);
+                //try.txt e para debug de ultimo arquivo salvo
                 StreamWriter arquivo1 = new StreamWriter(newFolder + "/try.txt");
 
                 arquivo1.Write(myFile.Name);
                 arquivo1.Close();
+
+                //leitura de arquivo c dados
                 StreamReader arquivo = new StreamReader(newFolder + "/" + myFile.Name);
                 string tipos = arquivo.ReadLine();
                 string[] categorias = tipos.Split('-');
-
+                // subsitituimos os ultimos valores por 0.00 e os ignoramos
                 tempo.text = "Tempo = " + categorias[categorias.Length - 2];
                 categoria.text = categorias[categorias.Length - 3];
                 categorias[categorias.Length - 1] = "0.00";
                 categorias[categorias.Length - 2] = "0.00";
                 categorias[categorias.Length - 3] = "0.00";
 
+                // colocando em categorias para os sliders
                 float[] quantidades = new float[5];
                 float total = 0f;
                 foreach (string v in categorias)
@@ -84,7 +88,9 @@ namespace aqer
                     }
                     total += 1f;
                 }
+                // anulamos os 0.00
                 total -= 3f;
+                // mostramos os resultados
                 Acat.value = quantidades[4] / total;
                 Aval.text = quantidades[4].ToString();
 
@@ -105,6 +111,7 @@ namespace aqer
 
             else
             {
+                // mesma coisa que para linux, porem usamos o @ para achar o path
                 var directory = new DirectoryInfo(@".\Dados");
                 var myFile = directory.GetFiles()
                              .OrderByDescending(f => f.LastWriteTime)
